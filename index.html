@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>3D</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+<div id="stage"></div>
+
+<script src="js/vendor/three.min.js"></script>
+<script src="js/vendor/jquery.js"></script>
+<script src="js/vendor/dat.gui.min.js"></script>
+
+<script src="js/utils/libs/stats.min.js"></script>
+<script src="js/utils/controls/TrackballControls.js"></script>
+<script src="js/utils/controls/TransformControls.js"></script>
+<script src="js/utils/controls/OrbitControls.js"></script>
+
+<script src="js/app.js"></script>
+<script src="js/helpers/math.js"></script>
+<script src="js/classes/Stage.js"></script>
+<script src="js/classes/Environment.js"></script>
+<script src="js/classes/ScatteredPlane.js"></script>
+<script src="js/index.js"></script>
+
+<script type="x-shader/x-vertex" id="vertexShader">
+
+	attribute vec4 center;
+	varying vec4 vCenter;
+
+	void main() {
+
+		vCenter = center;
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+	}
+
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentShader">
+
+	#extension GL_OES_standard_derivatives : enable
+
+	varying vec4 vCenter;
+
+	float edgeFactorTri() {
+
+		vec3 d = fwidth( vCenter.xyz );
+		vec3 a3 = smoothstep( vec3( 0.0 ), d * 1.5, vCenter.xyz );
+		return min( min( a3.x, a3.y ), a3.z );
+
+	}
+
+	float edgeFactorQuad1() {
+
+		vec2 d = fwidth( vCenter.xy );
+		vec2 a2 = smoothstep( vec2( 0.0 ), d * 1.5, vCenter.xy );
+
+		return min( a2.x, a2.y );
+
+	}
+
+	float edgeFactorQuad2() {
+
+		vec2 d = fwidth( 1.0 - vCenter.xy );
+		vec2 a2 = smoothstep( vec2( 0.0 ), d * 1.5, 1.0 - vCenter.xy );
+
+		return min( a2.x, a2.y );
+	}
+
+	void main() {
+
+		if ( vCenter.w == 0.0 ) {
+
+			gl_FragColor.rgb = mix( vec3( 1.0 ), vec3( 0.2 ), edgeFactorTri() );
+
+		} else {
+
+			gl_FragColor.rgb = mix( vec3( 1.0 ), vec3( 0.2 ), min( edgeFactorQuad1(), edgeFactorQuad2() ) );
+
+		}
+
+		gl_FragColor.a = 1.0;
+
+	}
+
+</script>
+
+</body>
+</html>
