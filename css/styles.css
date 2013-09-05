@@ -1,0 +1,16 @@
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    background: #222;
+    margin: 0;
+    overflow: hidden;
+}
+
+#stats {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+}
