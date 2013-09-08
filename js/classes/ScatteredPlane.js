@@ -40,10 +40,15 @@
 
     ScatteredPlane.prototype.update = function () {
         this.mesh.geometry.verticesNeedUpdate = true;
+        this.mesh.geometry.normalsNeedUpdate = true;
         
         for (var i = 0; i < this.mesh.geometry.vertices.length; i += 1) {
             this.mesh.geometry.vertices[i].z = this.offsets[i] * this.span;
         }
+
+        this.mesh.geometry.computeCentroids();
+        this.mesh.geometry.computeFaceNormals();
+        this.mesh.geometry.computeVertexNormals();
     };
 
     app.ScatteredPlane = ScatteredPlane;

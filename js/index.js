@@ -17,7 +17,9 @@
             lightSpread: 5,
             lightsDistance: 10,
             lightsOffsetY: 5,
-            wireframe: false
+            wireframe: false,
+            smooth: true,
+            speed: 1
         },
         DEBUG = false;
 
@@ -38,13 +40,14 @@
 
     function update () {
         var elapsed = start - new Date().getTime(),
-            phase = Math.cos(elapsed / 100) / 2,
+            phase = Math.cos(elapsed / (100 - userSettings.speed)) / 2,
             ls = userSettings.lightSpread;
 
         controls.update();
         scatteredPlane.update();
         scatteredPlane.mesh.rotation.z += 0.01;
         scatteredPlane.span += phase / 3;
+        scatteredPlane.material.shading = (userSettings.smooth ? THREE.SmoothShading : THREE.FlatShading);
 
         for (var i = 0; i < lights.length; i += 1) {
             lights[i].intensity = userSettings.lightsIntensity + phase - userSettings.lightSpan;
@@ -76,13 +79,15 @@
         gui.add(userSettings, 'lightSpread', 1, 10);
         gui.add(userSettings, 'lightsDistance', 5, 20);
         gui.add(userSettings, 'lightsOffsetY', 5, 20);
+        gui.add(userSettings, 'speed', -200, 200);
+        gui.add(userSettings, 'smooth');
         gui.add(userSettings, 'wireframe');
     }
 
     function addPlane () {
         var material = new THREE.MeshLambertMaterial({
             color: 0xffffff,
-            shading: THREE.FlatShading,
+            shading: THREE.SmoothShading,
             overdraw: true,
         });
 
